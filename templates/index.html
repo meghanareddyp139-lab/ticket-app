@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Support Triage — Smart Ticket Classifier</title>
+  <meta name="description" content="AI-powered IT support ticket classification system that intelligently routes your support requests to the right department instantly." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+<body>
+
+<!-- ── NAV ─────────────────────────────────────────────── -->
+<nav class="navbar" id="navbar">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">🎫 <span>SupportAI</span></a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#classify">Classify</a></li>
+      <li><a href="#departments">Departments</a></li>
+      <li><a href="#analytics">Analytics</a></li>
+      <li><a href="#locations">Locations</a></li>
+    </ul>
+    <a href="#classify" class="btn-nav">Get Support</a>
+  </div>
+</nav>
+
+<!-- ── HERO ─────────────────────────────────────────────── -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✨ Powered by Deep Learning</div>
+    <h1>Smart IT Ticket<br/><span class="gradient-text">Classification AI</span></h1>
+    <p class="hero-sub">Describe your issue and our AI instantly routes it to the right department — no waiting, no guessing.</p>
+    <div class="hero-btns">
+      <a href="#classify" class="btn-primary">Classify My Ticket</a>
+      <a href="#analytics" class="btn-ghost">View Performance</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num" id="statPrecision">—</span><span class="stat-lbl">Precision</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num" id="statRecall">—</span><span class="stat-lbl">Recall</span></div>
+      <div class="stat-divider"></div>
+      <div class="stat"><span class="stat-num" id="statF1">—</span><span class="stat-lbl">F1-Score</span></div>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <div class="scroll-indicator"></div>
+  </div>
+</section>
+
+<!-- ── ABOUT ──────────────────────────────────────────────── -->
+<section class="section section-dark" id="about">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">💡 About This Project</div>
+      <h2>What is SupportAI?</h2>
+      <p>An academic deep-learning project that automates IT helpdesk ticket routing using a trained LSTM neural network.</p>
+    </div>
+
+    <div class="about-grid">
+      <!-- Step 1 -->
+      <div class="about-card glass-card">
+        <div class="about-step">01</div>
+        <div class="about-icon">📝</div>
+        <h3>Describe Your Issue</h3>
+        <p>Type a free-text description of your IT problem — no forms, no dropdowns. Just plain language.</p>
+      </div>
+      <!-- Step 2 -->
+      <div class="about-card glass-card">
+        <div class="about-step">02</div>
+        <div class="about-icon">🤖</div>
+        <h3>AI Analyses the Text</h3>
+        <p>Our LSTM model tokenizes and processes your input, then predicts the best-matching support department with a confidence score.</p>
+      </div>
+      <!-- Step 3 -->
+      <div class="about-card glass-card">
+        <div class="about-step">03</div>
+        <div class="about-icon">🚀</div>
+        <h3>Instant Routing</h3>
+        <p>Your ticket is classified in milliseconds and routed to the right team — Technical Support, Billing, Security, and more.</p>
+      </div>
+    </div>
+
+    <!-- Highlights banner -->
+    <div class="about-highlights">
+      <div class="highlight-item">
+        <span class="hi-icon">🧠</span>
+        <div>
+          <div class="hi-title">LSTM Deep Learning</div>
+          <div class="hi-sub">Built with TensorFlow &amp; Keras</div>
+        </div>
+      </div>
+      <div class="highlight-divider"></div>
+      <div class="highlight-item">
+        <span class="hi-icon">🗂️</span>
+        <div>
+          <div class="hi-title">8 Support Categories</div>
+          <div class="hi-sub">Trained on real customer tickets</div>
+        </div>
+      </div>
+      <div class="highlight-divider"></div>
+      <div class="highlight-item">
+        <span class="hi-icon">⚡</span>
+        <div>
+          <div class="hi-title">&lt; 200ms Response</div>
+          <div class="hi-sub">Real-time Flask API backend</div>
+        </div>
+      </div>
+      <div class="highlight-divider"></div>
+      <div class="highlight-item">
+        <span class="hi-icon">📊</span>
+        <div>
+          <div class="hi-title">Live Analytics</div>
+          <div class="hi-sub">Per-class precision, recall &amp; F1</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CLASSIFY ──────────────────────────────────────────── -->
+<section class="section" id="classify">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🔍 AI Classification</div>
+      <h2>Describe Your Issue</h2>
+      <p>Our LSTM deep learning model analyses your ticket and routes it to the correct support team in milliseconds.</p>
+    </div>
+
+    <div class="classify-grid">
+      <div class="classify-input-card glass-card">
+        <h3>Submit Your Ticket</h3>
+        <textarea id="ticketText" placeholder="e.g. My laptop won't connect to the VPN and I can't access work files from home..." rows="7"></textarea>
+        <div class="char-count"><span id="charCount">0</span> characters</div>
+
+        <div class="form-field">
+          <label class="form-label" for="ticketLanguage">🌐 Issue Language</label>
+          <div class="select-wrapper">
+            <select id="ticketLanguage" class="language-select">
+              <option value="English" selected>🇬🇧 English</option>
+              <option value="Hindi">🇮🇳 Hindi — हिन्दी</option>
+              <option value="Spanish">🇪🇸 Spanish — Español</option>
+              <option value="French">🇫🇷 French — Français</option>
+              <option value="German">🇩🇪 German — Deutsch</option>
+              <option value="Portuguese">🇧🇷 Portuguese — Português</option>
+              <option value="Mandarin">🇨🇳 Mandarin — 普通话</option>
+              <option value="Japanese">🇯🇵 Japanese — 日本語</option>
+              <option value="Korean">🇰🇷 Korean — 한국어</option>
+              <option value="Arabic">🇸🇦 Arabic — العربية</option>
+              <option value="Russian">🇷🇺 Russian — Русский</option>
+              <option value="Italian">🇮🇹 Italian — Italiano</option>
+              <option value="Dutch">🇳🇱 Dutch — Nederlands</option>
+              <option value="Turkish">🇹🇷 Turkish — Türkçe</option>
+              <option value="Polish">🇵🇱 Polish — Polski</option>
+              <option value="Bengali">🇧🇩 Bengali — বাংলা</option>
+              <option value="Punjabi">🇮🇳 Punjabi — ਪੰਜਾਬੀ</option>
+              <option value="Tamil">🇮🇳 Tamil — தமிழ்</option>
+              <option value="Telugu">🇮🇳 Telugu — తెలుగు</option>
+              <option value="Marathi">🇮🇳 Marathi — मराठी</option>
+              <option value="Urdu">🇵🇰 Urdu — اردو</option>
+              <option value="Malay">🇲🇾 Malay — Bahasa Melayu</option>
+              <option value="Indonesian">🇮🇩 Indonesian — Bahasa Indonesia</option>
+              <option value="Vietnamese">🇻🇳 Vietnamese — Tiếng Việt</option>
+              <option value="Thai">🇹🇭 Thai — ภาษาไทย</option>
+              <option value="Greek">🇬🇷 Greek — Ελληνικά</option>
+              <option value="Swedish">🇸🇪 Swedish — Svenska</option>
+              <option value="Other">🌍 Other / Not Listed</option>
+            </select>
+            <span class="select-arrow">▾</span>
+          </div>
+        </div>
+
+        <button class="btn-primary full-width" id="classifyBtn" onclick="classifyTicket()">
+          <span id="btnText">⚡ Classify Now</span>
+          <span id="btnLoader" class="hidden">Analyzing...</span>
+        </button>
+        <div class="example-prompts">
+          <p>Try an example:</p>
+          <div class="chips">
+            <span class="chip" onclick="fillExample('My computer screen is flickering and sometimes goes black')">🖥️ Hardware</span>
+            <span class="chip" onclick="fillExample('I forgot my email password and cannot login to my account')">🔐 Account</span>
+            <span class="chip" onclick="fillExample('The billing invoice seems incorrect, I was charged twice')">💳 Billing</span>
+            <span class="chip" onclick="fillExample('The software keeps crashing when I try to open reports')">💾 Software</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="classify-result-area" id="resultArea">
+        <div class="result-placeholder" id="resultPlaceholder">
+          <div class="placeholder-icon">🤖</div>
+          <p>Your AI-powered routing result will appear here</p>
+          <p class="placeholder-sub">Submit a ticket description to get started</p>
+        </div>
+        <div class="result-output hidden" id="resultOutput">
+          <div class="result-department-card" id="deptCard">
+            <div class="dept-icon" id="deptIcon">🏢</div>
+            <div class="dept-info">
+              <div class="dept-label">Routed to Department</div>
+              <div class="dept-name" id="deptName">—</div>
+            </div>
+            <div class="confidence-badge" id="confBadge">0%</div>
+          </div>
+
+          <div class="confidence-section">
+            <h4>Confidence Breakdown</h4>
+            <div class="prob-bars" id="probBars"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── DEPARTMENTS ───────────────────────────────────────── -->
+<section class="section section-dark" id="departments">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">🏢 Support Teams</div>
+      <h2>Our Departments</h2>
+      <p>Every support category is handled by a specialized team trained to resolve your issues fast.</p>
+    </div>
+    <div class="dept-grid" id="deptGrid">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- ── ANALYTICS ─────────────────────────────────────────── -->
+<section class="section" id="analytics">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">📊 Model Analytics</div>
+      <h2>Performance Metrics</h2>
+      <p>Evaluated on a held-out 20% test split from the real customer support ticket dataset.</p>
+    </div>
+
+    <div class="metrics-overview" id="metricsOverview">
+      <div class="metric-card glass-card">
+        <div class="metric-icon">🎯</div>
+        <div class="metric-value" id="mPrecision">—</div>
+        <div class="metric-label">Precision</div>
+        <div class="metric-bar"><div class="metric-fill" id="barPrecision" style="width:0%"></div></div>
+      </div>
+      <div class="metric-card glass-card">
+        <div class="metric-icon">📡</div>
+        <div class="metric-value" id="mRecall">—</div>
+        <div class="metric-label">Recall</div>
+        <div class="metric-bar"><div class="metric-fill" id="barRecall" style="width:0%"></div></div>
+      </div>
+      <div class="metric-card glass-card">
+        <div class="metric-icon">⚡</div>
+        <div class="metric-value" id="mF1">—</div>
+        <div class="metric-label">F1-Score</div>
+        <div class="metric-bar"><div class="metric-fill" id="barF1" style="width:0%"></div></div>
+      </div>
+    </div>
+
+    <div class="analytics-bottom">
+      <div class="best-card glass-card" id="bestCard">
+        <h3>🏆 Best Performing Category</h3>
+        <div class="best-body" id="bestBody">Loading...</div>
+      </div>
+      <div class="per-class-card glass-card">
+        <h3>📋 Per-Class Breakdown</h3>
+        <div class="table-wrap">
+          <table class="metrics-table" id="metricsTable">
+            <thead>
+              <tr><th>Category</th><th>Precision</th><th>Recall</th><th>F1-Score</th><th>Support</th></tr>
+            </thead>
+            <tbody id="metricsBody">
+              <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--muted)">Loading metrics...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── LOCATIONS / MAP ──────────────────────────────────── -->
+<section class="section section-dark" id="locations">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-tag">📍 Support Centers</div>
+      <h2>Find Us Near You</h2>
+      <p>Our support centers are located across major cities. Walk in or book an appointment for in-person assistance.</p>
+    </div>
+    <div class="map-layout">
+      <div class="map-sidebar">
+        <div class="location-card active" data-lat="28.6139" data-lng="77.2090" onclick="focusLocation(this)">
+          <div class="loc-icon">🏢</div>
+          <div class="loc-info">
+            <div class="loc-name">New Delhi HQ</div>
+            <div class="loc-addr">Connaught Place, New Delhi 110001</div>
+            <div class="loc-hours">Mon–Fri · 9 AM–6 PM</div>
+          </div>
+        </div>
+        <div class="location-card" data-lat="19.0760" data-lng="72.8777" onclick="focusLocation(this)">
+          <div class="loc-icon">🏙️</div>
+          <div class="loc-info">
+            <div class="loc-name">Mumbai Office</div>
+            <div class="loc-addr">Bandra Kurla Complex, Mumbai 400051</div>
+            <div class="loc-hours">Mon–Sat · 9 AM–7 PM</div>
+          </div>
+        </div>
+        <div class="location-card" data-lat="12.9716" data-lng="77.5946" onclick="focusLocation(this)">
+          <div class="loc-icon">💻</div>
+          <div class="loc-info">
+            <div class="loc-name">Bengaluru Tech Hub</div>
+            <div class="loc-addr">MG Road, Bengaluru 560001</div>
+            <div class="loc-hours">Mon–Sat · 8 AM–8 PM</div>
+          </div>
+        </div>
+        <div class="location-card" data-lat="17.3850" data-lng="78.4867" onclick="focusLocation(this)">
+          <div class="loc-icon">🌟</div>
+          <div class="loc-info">
+            <div class="loc-name">Hyderabad Center</div>
+            <div class="loc-addr">HITEC City, Hyderabad 500081</div>
+            <div class="loc-hours">Mon–Fri · 9 AM–6 PM</div>
+          </div>
+        </div>
+      </div>
+      <div class="map-container">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────── -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="nav-logo">🎫 <span>SupportAI</span></div>
+        <p>AI-powered ticket classification that routes your support requests to the right team — instantly and accurately.</p>
+      </div>
+      <div class="footer-links">
+        <h4>Navigation</h4>
+        <a href="#about">About</a>
+        <a href="#classify">Classify Ticket</a>
+        <a href="#departments">Departments</a>
+        <a href="#analytics">Analytics</a>
+        <a href="#locations">Locations</a>
+      </div>
+      <div class="footer-links">
+        <h4>Technology</h4>
+        <a href="#">LSTM Deep Learning</a>
+        <a href="#">TensorFlow / Keras</a>
+        <a href="#">Flask API</a>
+        <a href="#">Python NLP</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 SupportAI · Built for Academic Demonstration</p>
+    </div>
+  </div>
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="/static/js/main.js"></script>
+</body>
+</html>

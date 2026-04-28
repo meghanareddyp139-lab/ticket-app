@@ -1,0 +1,32 @@
+# Virtual environment
+tfenv/
+venv/
+env/
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+
+# Trained model files (large binaries - regenerate with generate_dataset.py)
+classifier_pipeline.pkl
+label_encoder.pkl
+tokenizer.pkl
+ticket_classifier.h5
+
+# Jupyter
+.ipynb_checkpoints/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
