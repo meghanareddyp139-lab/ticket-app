@@ -12,8 +12,6 @@ __pycache__/
 .Python
 
 # Trained model files (large binaries - regenerate with generate_dataset.py)
-classifier_pipeline.pkl
-label_encoder.pkl
 tokenizer.pkl
 ticket_classifier.h5
 
